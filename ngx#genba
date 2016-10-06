@@ -1,0 +1,87 @@
+#!/bin/bash
+#
+# /usr/bin/ngx#genba
+#
+
+__toolID="ngx#genba" 
+__version="0.08.1.060916.4.8"
+__os="redhat-linux-gnu"
+__github="https://github.com/juliyvchirkov/ngxhashgenba"
+
+declare -A BIN && BIN=([tail]="/usr/bin/tail" [xxd]="/usr/bin/xxd" [sed]="/bin/sed" \
+                       [base64]="/usr/bin/base64" [openssl]="/usr/bin/openssl")
+
+[ $# -gt 0 ] && case ${1,,} in -h|-?|--help|--usage|-v|--version) ${BIN[tail]} -n 35 ${0} && 
+                             exit 64 ;;*);; esac
+
+for __elf in ${BIN[@]}; do [ ! -x ${__elf} ] && 
+                             >&2 echo -e "\ncore util ’${__elf}’ required by" \
+                                         "${__toolID}seems to be missing, sorry" &&
+                             exit 72
+done
+
+[ $# -lt 2 ] && echo -ne "\nusername:\040"
+[ $# -gt 0 ] && __uname=${1} || read __uname
+[ $# -eq 1 ] && echo ${__uname}
+[ $# -lt 2 ] && echo -ne "password:\040"
+[ $# -lt 2 ] && read -s __upass || __upass=${2}
+[ $# -lt 2 ] && __chr=1 && while [ $__chr -le ${#__upass} ]; do echo -n "*"; \
+                                    __chr=$(( $__chr + 1 )); done && echo
+
+[[ ${#__uname} -eq 0 || ${#__upass} -eq 0 ]] && >&2 echo -e "\ntabula rasa is a bad choice for" \
+                                                            "username or password, sorry" &&
+                                                exit 74
+
+[ $# -lt 2 ] && echo -ne "check up:\040" && read -s __cpass || __cpass=${__upass}
+[ $# -lt 2 ] && __chr=1 && while [ $__chr -le ${#__cpass} ]; do echo -n "*"; \
+                                    __chr=$(( $__chr + 1 )); done && echo -e "\n"
+
+[ ! "${__upass}" == "${__cpass}" ] && >&2 echo "your last input does not match the" \
+                                               "password you’ve provided before, sorry" &&
+                                      exit 74 
+
+__salt=$(${BIN[openssl]} rand -base64 3)
+__sha1sltd=$(echo -n ${__upass}${__salt} \
+           | ${BIN[openssl]} dgst -binary -sha1 \
+           | ${BIN[xxd]} -ps \
+           | ${BIN[sed]} 's#$#'"$(echo -n ${__salt} | ${BIN[xxd]} -ps)"'#' \
+           | ${BIN[xxd]} -r -ps \
+           | ${BIN[base64]})
+
+echo "$__uname:{SSHA}${__sha1sltd}"
+exit 0
+
+kinda replica of htpasswd util from apache httpd https://httpd.apache.org/
+toolset, ngx#genba inherits the basics of its prototype & offers similar
+workflow to maintain the task. the thing is, ngx#genba is targeted at
+nginx https://nginx.org w/ the goal to make web more secure & safe by
+providing simple solution to obtain modern strong hashes based on actual
+crypto methods for nginx auth_basic & to get rid of obsolete insecure
+oldies like crypt, sha, md5 et cetera  
+
+  usage: ngx#genba ⌘  ngx#genba username ⌘  ngx#genba username password
+
+ngx#genba turns username & password passed by user into the hash pair for
+auth_basic_user_file https://goo.gl/ZGdA7Z in interactive, semi-interactive
+or non-interactive way. hash pairs are secured w/ SSHA (salted SSH-1; strong,
+durable & trustworthy scheme https://goo.gl/CcksEm, widely used by openldap
+& dovecot on regular basics & recommended by nginx). hashes meet the guidlines
+declared at sec 5.3 rfc2307 https://goo.gl/x4ZXmy
+
+ ngx#genba username password >>/etc/nginx/conf.d/vhosts/auth/.vhost14-userfile
+
+username & password are accepted either via cl args or from stdin. outcome is
+published to startdard stdout stream & copypaste phase may be omitted since
+the result can be easily put directly to your auth_basic_user_file w/ pipes.
+passing both username & password via command line forces non-interactive mode
+i.e. any output to stdout except for the hash is suppressed
+
+ ngx#genba stepansraka `cat /root/.webpwdplain | grep stepansraka | cut -d: -f2`
+
+if you beleive no password should never be typed at cl nowai, you still
+can apply workaround like shown above to obtain batch processing while
+your passwords will stay safe away from cl
+
+glory to Ukraine!
+ 
+engineXhashgenBA v0.08.1.060916.4.8 https://github.com/juliyvchirkov/ngxhashgenba
