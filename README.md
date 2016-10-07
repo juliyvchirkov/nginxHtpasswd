@@ -9,7 +9,7 @@ simple solution to obtain modern strong hashes based on actual crypto
 methods for nginx [auth_basic](http://nginx.org/en/docs/http/ngx_http_auth_basic_module.html) & to get rid of obsolete insecure oldies like
 crypt, sha, md5 et cetera  
 
-#### engineXhashgenBA v0.08.1.060916.4.8
+#### engineXhashgenBA v0.08.1.7916.4.8
 
 
 
