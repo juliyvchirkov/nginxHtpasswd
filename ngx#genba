@@ -62,7 +62,7 @@ oldies like crypt, sha, md5 et cetera
   usage: ngx#genba ⌘  ngx#genba username ⌘  ngx#genba username password
 
 ngx#genba turns username & password passed by user into the hash pair for
-auth_basic_user_file https://goo.gl/ZGdA7Z in interactive, semi-interactive
+auth_basic_user_file https://goo.gl/Ts7bCp in interactive, semi-interactive
 or non-interactive way. hash pairs are secured w/ SSHA (salted SSH-1; strong,
 durable & trustworthy scheme https://goo.gl/CcksEm, widely used by openldap
 & dovecot on regular basics & recommended by nginx). hashes meet the guidlines
