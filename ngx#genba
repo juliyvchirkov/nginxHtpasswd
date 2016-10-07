@@ -4,7 +4,7 @@
 #
 
 __toolID="ngx#genba" 
-__version="0.08.1.060916.4.8"
+__version="0.08.1.7916.4.8"
 __os="redhat-linux-gnu"
 __github="https://github.com/juliyvchirkov/ngxhashgenba"
 
@@ -16,7 +16,7 @@ declare -A BIN && BIN=([tail]="/usr/bin/tail" [xxd]="/usr/bin/xxd" [sed]="/bin/s
 
 for __elf in ${BIN[@]}; do [ ! -x ${__elf} ] && 
                              >&2 echo -e "\ncore util ’${__elf}’ required by" \
-                                         "${__toolID}seems to be missing, sorry" &&
+                                         "${__toolID} seems to be missing, sorry" &&
                              exit 72
 done
 
@@ -84,4 +84,4 @@ your passwords will stay safe away from cl
 
 glory to Ukraine!
  
-engineXhashgenBA v0.08.1.060916.4.8 https://github.com/juliyvchirkov/ngxhashgenba
+engineXhashgenBA v0.08.1.7916.4.8 https://github.com/juliyvchirkov/ngxhashgenba
